@@ -1,0 +1,8 @@
+prefix=/home/louis/catkin_ws/devel
+
+Name: follower_visual
+Description: Description of follower_visual
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
