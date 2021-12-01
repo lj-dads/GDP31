@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 
 import rospy
+import roslib
+import tf.transformations
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Twist
-#from std_srvs.srv import Empty
 import time
 import numpy as np
 import math
@@ -30,7 +31,7 @@ KP = 1.5/100
 # If the line is completely lost, the error value shall be compensated by:
 LOSS_FACTOR = 1.2
 
-# Send messages every $TIMER_PERIOD seconds
+# Send msgs every $TIMER_PERIOD seconds
 TIMER_PERIOD = 0.06
 
 # When about to end the track, move for ~$FINALIZATION_PERIOD more seconds
@@ -60,7 +61,7 @@ just_seen_line = False
 just_seen_right_mark = False
 should_move = False
 right_mark_count = 0
-message = Twist()
+msg = Twist()
 finalization_countdown = None
 
 def nothing(n):
@@ -91,7 +92,7 @@ def stop_follower_callback(request, response):
 
 def image_callback(msg):
     """
-    Function to be called whenever a new Image message arrives.
+    Function to be called whenever a new Image msg arrives.
     Update the global variable 'image_input'
     """
     global image_input
@@ -116,72 +117,79 @@ def get_contour_data(img):
     return contour_centres
 
 def turn_body():
-    global message
-    message.linear.x = 0.1
-    message.angular.z = 1
-    cmd_pub.publish(message)
+    global msg
+    msg.linear.x = 0.1
+    msg.angular.z = 1
+    cmd_pub.publish(msg)
 
 
 def timer_callback(boo):
-    global message
-    cmd_pub.publish(2, 3)
-    global error
-    global image_input
-    global just_seen_line
-    global just_seen_right_mark
-    global should_move
-    global right_mark_count
-    global finalization_countdown
-    # Wait for the first image to be received
-    if type(image_input) != np.ndarray:
-        return
-    height, width, _ = image_input.shape
-    img = image_input.copy()
+    var = 1
+    while var < 2:
+        global msg
+        global error
+        global image_input
+        global just_seen_line
+        global just_seen_right_mark
+        global should_move
+        global right_mark_count
+        global finalization_countdown
+        # Wait for the first image to be received
+        if type(image_input) != np.ndarray:
+            return
+        height, width, _ = image_input.shape
+        img = image_input.copy()
 
-    #get contour centres from image
-    contour_centres = get_contour_data(img)  
+        #get contour centres from image
+        contour_centres = get_contour_data(img)  
 
-    ##need this if statement to get a new image from subscriber to feed back into 
-    ##timer_callback
+        ##need this if statement to get a new image from subscriber to feed back into 
+        ##timer_callback
 
 
-    if contour_centres.size == 0:
-        turn_body()
-        time.sleep(0.1)
-        image_callback(Image)
-    #convert centres to line path
-    [vx,vy,x0,y0] = cv2.fitLine(contour_centres, 2, 0, 0.01, 0.01)
-    #draw line on image and find line properties
-    m = 600
-    cv2.line(img, (int(x0[0]-m*vx[0]), int(y0[0]-m*vy[0])),(int(x0[0]+m*vx[0]), int(y0[0]+m*vy[0])), (50, 255, 50), 4)
-    #show image
-    cv2.imshow('window',img)
-    
-    angle_rad = math.atan(vy/vx)
+        if contour_centres.size == 0:
+            turn_body()
+            time.sleep(0.1)
+            break
 
-    # line equation is y = vy/vx *x + constant
-    #height / 2 = vy/vx * x + constant
-    #x = height/2 - constant *vx/vy
-    #find middle x values
-    constant = x0/math.tan(math.pi/2 -angle_rad) - y0
-    middle_x = (height/2 - constant) *vx/vy
-    print middle_x, y0, x0, constant, angle_rad, vx, vy
-    #output velocities
-    if (math.pi/2 - 0.2 < angle_rad < math.pi/2 + 0.2): #for skewed line
-        if (middle_x == width / 2):                    #for off centre line
-            message.linear.x = LINEAR_SPEED
+        #convert centres to line path
+        [vx,vy,x0,y0] = cv2.fitLine(contour_centres, 2, 0, 0.01, 0.01)
+        #draw line on image and find line properties
+        m = 600
+        cv2.line(img, (int(x0[0]-m*vx[0]), int(y0[0]-m*vy[0])),(int(x0[0]+m*vx[0]), int(y0[0]+m*vy[0])), (50, 255, 50), 4)
+        #show image
+        cv2.imshow('window',img)
+        
+        m = vy/vx
+        angle_rad = abs(math.atan(m))
+        # line equation is y = vy/vx *x + constant
+        #height / 2 = vy/vx * x + constant
+        #x = height/2 - constant *vx/vy
+        #find middle x values
+        constant = y0-m*x0
+        middle_x = (height/2 - constant)/m
+        print middle_x, y0, x0, constant, angle_rad, vx, vy
+                
+
+        #output velocities
+        if (math.pi/2 - 0.2 < angle_rad < math.pi/2 + 0.2): #for skewed line
+            if (width / 2 - 50 < middle_x < width / 2 + 50):   #for off centre line
+                msg.linear.x = LINEAR_SPEED
+            else:
+                error = middle_x - width//2
+                msg.angular.z = float(error) * -KP
+                print("Error: {} | Angular Z: {}, ".format(error, msg.angular.z)) 
         else:
-            error = x - width//2
-            message.angular.z = float(error) * -KP
-            print("Error: {} | Angular Z: {}, ".format(error, message.angular.z)) 
-    else:
-            print poo
+            error = abs(angle_rad - math.pi/2)
+            msg.angular.z = float(error) * -KP
+            print("Error: {} | Angular Z: {}, ".format(error, msg.angular.z)) 
 
-    # Print the image for 5milis, then resume execution
-    cv2.waitKey(5)
+        # Print the image for 5milis, then resume execution
+        cv2.waitKey(5)
 
-        # Publish the message to 'cmd_vel'
-    cmd_pub.publish(message)
+            # Publish the msg to 'cmd_vel'
+        cmd_pub.publish(msg)
+        var += 1
 
 
 
