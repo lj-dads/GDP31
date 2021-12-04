@@ -1,0 +1,9 @@
+For the model plants to appear you must either add this command to your ~/.bashrc file or run it in the terminal whenever you start gazebo (Note replace workspace_name with your workspace name):
+
+export GAZEBO_MODEL_PATH=~/workspace_name/src/percy_sim/models:$GAZEBO_MODEL_PATH
+
+
+For the ground texture to show up it needs to be added to the gazebo source files (wherever it was installed i.e /usr/share/gazebo-9/media/materials/textures/)
+
+
+You can switch between the percy model and basic 4 wheel robot by changing the Farm.launch file

@@ -1,0 +1,464 @@
+<?xml version="1.0"?>
+<robot name="percy" xmlns:xacro="http://wwww.ros.org/wiki/xacro">
+<xacro:include filename="$(find percy_model)/urdf/materials.xacro" />
+<xacro:include filename="$(find percy_model)/urdf/percy_model_macros.xacro" />
+<xacro:include filename="$(find percy_model)/urdf/percy_model.gazebo.xacro" />
+<xacro:property name= "link_width" value= "0.02"/>
+<xacro:property name="body_length" value="0.7"/>
+<xacro:property name="body_width" value="0.5"/>
+<xacro:property name="body_height" value="0.2"/>
+<xacro:property name="work_height" value="0.3"/>
+<xacro:property name="inner_strut_width" value="0.5"/>
+<xacro:property name="leg_radius" value = "0.025"/>
+<xacro:property name="theta" value="37"/>
+<xacro:property name="leg_length" value="${(work_height+body_height)/(cos(radians(theta)))}"/>
+<xacro:macro name="front_left_wheel_origin">
+<origin xyz=" ${-1*((leg_length)*sin(radians(theta)))} ${body_width/2 + leg_radius} ${(body_height/2)-(leg_length*cos(radians(theta)))}" rpy="${radians(90)} 0.0 0.0"/>
+</xacro:macro>
+<xacro:property name="wheel_radius" value="0.1"/>
+<xacro:property name="wheel_thickness" value="0.04"/>
+<xacro:property name="wheel_mass" value="0.2"/>
+<xacro:property name="camera_link_length" value="0.1"/>
+<xacro:property name="camera_link_width" value="0.02"/>
+<xacro:property name="camera_link_height" value="0.05"/>
+<xacro:property name="wheel_dist" value="${body_width+leg_radius*4}"/>
+<xacro:property name="density" value="2710"/>
+<link name="chassis">
+  <pose> 0 0 3 0 0 0 </pose>
+    <collision>
+     <origin rpy="0.0 0.0 0.0" xyz="0 ${body_width/2} ${body_height/2}"/>
+        <geometry>
+        <box size=" ${body_length} ${link_width} ${link_width}"/>   
+        </geometry>
+    </collision>
+    <visual >
+            
+        
+        <origin rpy="0.0 0.0 0.0" xyz="0 ${body_width/2} ${body_height/2}"/>
+        <geometry>
+            <box size="${body_length} ${link_width} ${link_width}"/>
+        <material name="orange"/>
+        </geometry>
+
+    </visual>
+
+    <collision>
+        <origin rpy="0.0 0.0 0" xyz="0 ${-body_width/2} ${body_height/2}"/>
+
+        <geometry>
+        <box size="${body_length} ${link_width} ${link_width}"/>   
+        </geometry>
+        </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0" xyz="0 ${-body_width/2} ${body_height/2}"/>
+        
+        <geometry>
+            <box size=" ${body_length} ${link_width} ${link_width}"/>
+        </geometry>
+
+    </visual>
+
+     <collision>
+        <origin rpy="0.0 0.0 0" xyz="${body_length/2} 0 ${body_height/2}"/>
+
+        <geometry>
+        <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+        </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0" xyz="${body_length/2} 0 ${body_height/2}"/>
+        
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+
+    </visual>
+
+    <collision>
+        <origin rpy="0.0 0.0 0" xyz="${-body_length/2} 0 ${body_height/2}"/>
+
+        <geometry>
+        <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+    </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0" xyz="${-body_length/2} 0 ${body_height/2}"/>
+        
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+
+    </visual>
+
+    <collision>
+        <origin rpy="0.0 0.0 0.0" xyz="0 ${body_width/2} ${-body_height/2}"/>
+
+        <geometry>
+        <box size=" ${body_length} ${link_width} ${link_width}"/>   
+        </geometry>
+    </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0.0" xyz="0 ${body_width/2} ${-body_height/2}"/>
+        <geometry>
+            <box size="${body_length} ${link_width} ${link_width}"/>
+        </geometry>
+
+    </visual>
+    <collision>
+        <origin rpy="0.0 0.0 0" xyz="0 ${-body_width/2} ${-body_height/2}"/>
+
+        <geometry>
+        <box size="${body_length} ${link_width} ${link_width}"/>   
+        </geometry>
+        </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0" xyz="0 ${-body_width/2} ${-body_height/2}"/>
+        
+        <geometry>
+            <box size=" ${body_length} ${link_width} ${link_width}"/>
+        </geometry>
+
+    </visual>
+
+     <collision>
+        <origin rpy="0.0 0.0 0" xyz="${body_length/2} 0 ${-body_height/2}"/>
+
+        <geometry>
+        <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+    </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0" xyz="${body_length/2} 0 ${-body_height/2}"/>
+        
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+
+    </visual>
+
+    <collision>
+        <origin rpy="0.0 0.0 0" xyz="${-body_length/2} 0 ${-body_height/2}"/>
+
+        <geometry>
+        <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+        </collision>
+    <visual >
+        <origin rpy="0.0 0.0 0" xyz="${-body_length/2} 0 ${-body_height/2}"/>
+        
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>   
+        </geometry>
+
+    </visual>
+
+    <collision>
+        <origin xyz="${body_length/2} ${body_width/2} ${0}"/>
+
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>   
+        </geometry>   
+    </collision>
+    <visual>
+        <origin xyz="${body_length/2} ${body_width/2} ${0}"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>   
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${body_length/2} ${-body_width/2} ${0}"/>
+
+        <geometry>
+        <box size="${link_width} ${link_width} ${body_height}"/>   
+        </geometry>   
+    </collision>
+    <visual>
+        <origin xyz="${body_length/2} ${-body_width/2} ${0}"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>   
+        </geometry>
+    </visual>
+    
+    <collision>
+        <origin xyz="${-body_length/2} ${body_width/2} ${0}"/>
+
+     <geometry>
+      <box size="${link_width} ${link_width} ${body_height}"/>   
+     </geometry>   
+    </collision>
+    <visual>
+        <origin xyz="${-body_length/2} ${body_width/2} ${0}"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>   
+        </geometry>
+    </visual>
+    
+    <collision>
+        <origin xyz="${-body_length/2} ${-body_width/2} ${0}"/>
+
+     <geometry>
+      <box size="${link_width} ${link_width} ${body_height}"/>   
+     </geometry>   
+    </collision>
+    <visual>
+        <origin xyz="${-body_length/2} ${-body_width/2} ${0}"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>   
+        </geometry>
+    </visual>
+    <collision>
+        <origin xyz="${inner_strut_width/2} 0.0 ${body_height/2}"/>
+
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${inner_strut_width/2} 0.0 ${body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${-inner_strut_width/2} 0.0 ${body_height/2}"/>
+
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-inner_strut_width/2} 0.0 ${body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${inner_strut_width/2} 0.0 ${-body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${inner_strut_width/2} 0.0 ${-body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </visual>
+    
+    <collision>
+        <origin xyz="${-inner_strut_width/2} 0.0 ${-body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-inner_strut_width/2} 0.0 ${-body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${inner_strut_width/2} ${body_width/2} 0"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${inner_strut_width/2} ${body_width/2} 0"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${inner_strut_width/2} ${-body_width/2} 0"/>
+
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${inner_strut_width/2} ${-body_width/2} 0"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${-inner_strut_width/2} ${body_width/2} 0"/>
+
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-inner_strut_width/2} ${body_width/2} 0"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </visual>
+    <collision>
+        <origin xyz="${-inner_strut_width/2} ${-body_width/2} 0"/>
+    
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-inner_strut_width/2} ${-body_width/2} 0"/>
+        <geometry>
+            <box size="${link_width} ${link_width} ${body_height}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="0 0 ${body_height/2}"/>
+
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="0 0 ${body_height/2}"/>
+        <geometry>
+            <box size="${link_width} ${body_width} ${link_width}"/>
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(theta)))} ${body_width/2+leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(theta)))}" rpy="0.0 ${radians(theta)} 0.0"/>
+
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(theta)))} ${body_width/2+leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(theta)))}" rpy="0.0 ${radians(theta)} 0.0"/>
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(-theta)))} ${body_width/2+leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(-theta)))}" rpy="0.0 ${radians(-theta)} 0.0"/>
+
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(-theta)))} ${body_width/2+leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(-theta)))}" rpy="0.0 ${radians(-theta)} 0.0"/>
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </visual>
+     <collision>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(theta)))} ${-body_width/2-leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(theta)))}" rpy="0.0 ${radians(theta)} 0.0"/>
+
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(theta)))} ${-body_width/2-leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(theta)))}" rpy="0.0 ${radians(theta)} 0.0"/>
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </visual>
+
+    <collision>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(-theta)))} ${-body_width/2-leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(-theta)))}" rpy="0.0 ${radians(-theta)} 0.0"/>
+
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}"/>   
+        </geometry>
+    </collision>
+    <visual>
+        <origin xyz="${-1*((leg_length/2)*sin(radians(-theta)))} ${-body_width/2-leg_radius} ${(body_height/2)-((leg_length/2)*cos(radians(-theta)))}" rpy="0.0 ${radians(-theta)} 0.0"/>
+        <geometry>
+            <cylinder radius="${leg_radius}" length="${leg_length}" color = "RED"/>   
+        </geometry>
+    </visual> -->
+
+    <!-- <collision>
+      <geometry>
+          <cylinder radius="${wheel_radius}" length="0.01"/>
+      </geometry>  
+    </collision>
+    
+    <visual>
+        <xacro:front_left_wheel_origin/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="0.01"/>
+      </geometry> 
+      <color rgba="0.0 0.0 0.0 1.0"/>
+
+    </visual> 
+
+     <collision>
+        <geometry>
+            <box size="${body_length} ${body_width} ${body_height+work_height}"/>
+             <box size="0.5 0.3 0.07"/> 
+        </geometry>
+    </collision>
+
+    <visual>
+        <origin xyz="0.0 0.0 ${-work_height/2}"/>
+        <geometry>
+            <box size="${body_length} ${body_width} ${body_height+work_height}"/>
+             <box size="0.5 0.3 0.07"/> 
+        </geometry>
+    </visual> -->
+
+    <!-- <inertial>
+        <mass value="10"/>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.1"/>
+        <inertia ixx="0.8333" ixy="0.0" ixz="0.0" iyy="1.2333" iyz="0.0" izz="1.2333"/>
+    </inertial> -->
+
+     <inertial>
+      <!-- <mass value="10"/> -->
+      <origin rpy="0 0 0" xyz="0 0 0.001"/>
+      <!-- <inertia ixx="5" ixy="0" ixz="0" iyy="5" iyz="0" izz="5"/> -->
+      <xacro:link_inertia height="${body_height}" length="${body_length}" width="${body_width}"/>
+    </inertial>
+</link>
+
+
+<link name="camera_link">
+    <collision>
+        <geometry>
+            <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+    <geometry>
+            <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
+        </geometry>
+    </visual>
+</link>
+
+<joint name="camera_joint" type="fixed">
+    <axis xyz="0.0 1.0 0.0"/>
+    <origin xyz="${body_length/2} 0.0 ${-body_height/2 + (camera_link_height/2)+(link_width/2)}" rpy="0.0 0.0 0.0"/>
+        <child link="camera_link"/>
+        <parent link="chassis"/>
+</joint>
+ <xacro:link_wheel name="link_rear_left_wheel" />
+<xacro:joint_wheel name="joint_rear_left_wheel" child="link_rear_left_wheel" origin_xyz="${-1*((leg_length)*sin(radians(theta)))} ${body_width/2 +leg_radius*2 + (wheel_thickness/2)} ${(body_height/2)-(leg_length*cos(radians(theta)))}" />
+ <xacro:link_wheel name="link_rear_right_wheel" />
+<xacro:joint_wheel name="joint_rear_right_wheel" child="link_rear_right_wheel" origin_xyz="${-1*((leg_length)*sin(radians(theta)))} ${-(body_width/2 + leg_radius*2 + (wheel_thickness/2))} ${(body_height/2)-(leg_length*cos(radians(theta)))}" />
+ <xacro:link_wheel name="link_front_left_wheel" />
+<xacro:joint_wheel name="joint_front_left_wheel" child="link_front_left_wheel" origin_xyz="${((leg_length)*sin(radians(theta)))} ${body_width/2 +leg_radius*2 + (wheel_thickness/2)} ${(body_height/2)-(leg_length*cos(radians(theta)))}" />
+ <xacro:link_wheel name="link_front_right_wheel" />
+<xacro:joint_wheel name="joint_front_right_wheel" child="link_front_right_wheel" origin_xyz="${((leg_length)*sin(radians(theta)))} ${-(body_width/2 + leg_radius*2 + (wheel_thickness/2))} ${(body_height/2)-(leg_length*cos(radians(theta)))}" />
+ 
+
+
+
+</robot>
+        <!-- <origin xyz=" ${-1*((leg_length)*sin(radians(theta)))} ${body_width/2 + leg_radius} ${(body_height/2)-(leg_length*cos(radians(theta)))}" rpy="${radians(90)} 0.0 0.0"/> -->
