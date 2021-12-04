@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <world name="farm">
+  <scene>
+  <sky>
+      <clouds>
+      <speed>12</speed>
+    </clouds>
+  </sky>
+  </scene>
+    <!-- A global light source -->
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <!-- A ground plane -->
+    <include>
+      <uri>model://ground</uri>
+    </include>
+  <include>
+  <uri>model://small_plant</uri>
+<pose> 1 0 -0.1 0 0 0 </pose>
+<name> plant 1 </name>
+  </include>
+
+  <include>
+  <uri>model://small_plant</uri>
+<pose> 2 0 -0.1 0 0 0 </pose>
+<name> plant 2 </name>
+  </include>
+
+    <include>
+  <uri>model://small_plant</uri>
+<pose> 8 0 -0.1 0 0 0 </pose>
+<name> plant 3 </name>
+  </include>
+
+    <include>
+  <uri>model://small_plant</uri>
+<pose> 4 0 -0.1 0 0 0 </pose>
+<name> plant 4 </name>
+  </include>
+
+  </world>
+</sdf>
