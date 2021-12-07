@@ -26,7 +26,7 @@ LINEAR_SPEED = 0.2
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
-KP = 1.5/10 
+KP = 1.5/100 
 
 # If the line is completely lost, the error value shall be compensated by:
 LOSS_FACTOR = 1.2
@@ -103,7 +103,7 @@ def get_contour_data(img):
     mask = cv2.inRange(img, lower_bgr_values, upper_bgr_values)
     cv2.imshow('windo2qw',mask)
 
-    contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
+    image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
     contour_centres = np.empty((0,2), int)       
     for c in contours:
         if (cv2.contourArea(c) != 0):
@@ -168,7 +168,7 @@ def timer_callback(boo):
         #find middle x values
         constant = y0-m*x0
         middle_x = (height/2 - constant)/m
-        #print middle_x, y0, x0, constant, angle_rad, vx, vy
+        print middle_x, y0, x0, constant, angle_rad, vx, vy
                 
 
         #output velocities
@@ -199,9 +199,8 @@ if __name__ == '__main__':
     try:
         rospy.init_node('Visual_Follower')
         cmd_pub = rospy.Publisher('/cmd_vel',Twist, queue_size=10)
-        image_sub = rospy.Subscriber('/percy/camera1/image_raw',Image, image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('usb_cam_front/image_raw',Image, image_callback, queue_size=10)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
-
     #timer_callback()
         #start_service = rospy.Service(Empty, 'start_follower', start_follower_callback)
         #stop_service = rospy.Service(Empty, 'stop_follower', stop_follower_callback)
