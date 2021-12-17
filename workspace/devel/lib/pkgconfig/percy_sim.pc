@@ -1,0 +1,8 @@
+prefix=/home/louis/GDP31/workspace/devel
+
+Name: percy_sim
+Description: Description of percy_sim
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

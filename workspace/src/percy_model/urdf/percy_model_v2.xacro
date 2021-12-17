@@ -736,7 +736,7 @@
 
 <joint name="camera_joint" type="fixed">
     <axis xyz="0.0 1.0 0.0"/>
-    <origin xyz="${body_length/2} 0.0 ${-body_height/2 + (camera_link_height/2)+(link_width/2)}" rpy="0.0 0.0 0.0"/>
+    <origin xyz="${body_length/2} 0.0 ${-body_height/2 + (camera_link_height/2)+(link_width/2)}" rpy="0.0 0.75 0.0"/>
         <child link="camera_link"/>
         <parent link="origin"/>
 </joint>

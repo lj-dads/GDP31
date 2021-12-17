@@ -1,0 +1,8 @@
+prefix=/home/louis/GDP31/workspace/devel
+
+Name: delta_coords
+Description: Description of delta_coords
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

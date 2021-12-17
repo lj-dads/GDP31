@@ -1,4 +1,4 @@
-prefix=/home/louis/catkin_ws/devel
+prefix=/home/louis/GDP31/workspace/devel
 
 Name: follower_visual
 Description: Description of follower_visual

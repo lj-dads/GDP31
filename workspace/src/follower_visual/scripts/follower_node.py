@@ -16,26 +16,20 @@ import cv_bridge
 bridge = cv_bridge.CvBridge()
 ## User-defined parameters: (Update these values to your liking)
 # Minimum size for a contour to be considered anything
-MIN_AREA = 500 
-
-# Minimum size for a contour to be considered part of the track
-MIN_AREA_TRACK = 5000
+MIN_AREA = 5 
 
 # Robot's speed when following the line
 LINEAR_SPEED = 0.2
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
-KP = 1.5/100 
-
+KP = 1.5/10
 # If the line is completely lost, the error value shall be compensated by:
 LOSS_FACTOR = 1.2
 
 # Send msgs every $TIMER_PERIOD seconds
 TIMER_PERIOD = 0.06
 
-# When about to end the track, move for ~$FINALIZATION_PERIOD more seconds
-FINALIZATION_PERIOD = 4
 
 # The maximum error value for which the robot is still in a straight line
 MAX_ERROR = 30
@@ -57,38 +51,11 @@ def crop_size(height, width):
 # Global vars. initial values
 image_input = 0
 error = 0
-just_seen_line = False
-just_seen_right_mark = False
-should_move = False
-right_mark_count = 0
 msg = Twist()
-finalization_countdown = None
 
 def nothing(n):
     pass
 
-def start_follower_callback(request, response):
-    """
-    Start the robot.
-    In other words, allow it to move (again)
-    """
-    global should_move
-    global right_mark_count
-    global finalization_countdown
-    should_move = True
-    right_mark_count = 0
-    finalization_countdown = None
-    return response
-
-def stop_follower_callback(request, response):
-    """
-    Stop the robot
-    """
-    global should_move
-    global finalization_countdown
-    should_move = False
-    finalization_countdown = None
-    return response
 
 def image_callback(msg):
     """
@@ -106,7 +73,7 @@ def get_contour_data(img):
     image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
     contour_centres = np.empty((0,2), int)       
     for c in contours:
-        if (cv2.contourArea(c) != 0):
+        if (cv2.contourArea(c) > MIN_AREA):
                     # calculate moments for each contour
             M = cv2.moments(c)        
                     # calculate x,y coordinate of center
@@ -118,8 +85,8 @@ def get_contour_data(img):
 
 def turn_body():
     global msg
-    msg.linear.x = 0.1
-    msg.angular.z = 1
+    msg.linear.x = 0
+    msg.angular.z = 2
     cmd_pub.publish(msg)
 
 
@@ -129,11 +96,6 @@ def timer_callback(boo):
         global msg
         global error
         global image_input
-        global just_seen_line
-        global just_seen_right_mark
-        global should_move
-        global right_mark_count
-        global finalization_countdown
         # Wait for the first image to be received
         if type(image_input) != np.ndarray:
             return
@@ -168,21 +130,29 @@ def timer_callback(boo):
         #find middle x values
         constant = y0-m*x0
         middle_x = (height/2 - constant)/m
-        print middle_x, y0, x0, constant, angle_rad, vx, vy
                 
 
-        #output velocities
-        if (math.pi/2 - 0.2 < angle_rad < math.pi/2 + 0.2): #for skewed line
-            if (width / 2 - 50 < middle_x < width / 2 + 50):   #for off centre line
-                msg.linear.x = LINEAR_SPEED
-            else:
-                error = middle_x - width//2
-                msg.angular.z = float(error) * -KP
-                print("Error: {} | Angular Z: {}, ".format(error, msg.angular.z)) 
+        if ((width / 2 - 110 > middle_x) ):
+            msg.angular.z = 1.0 * KP
+        elif( (middle_x > width / 2 + 110)):
+            msg.angular.z = 1.0 * -KP
         else:
-            error = abs(angle_rad - math.pi/2)
-            msg.angular.z = float(error) * -KP
-            print("Error: {} | Angular Z: {}, ".format(error, msg.angular.z)) 
+            msg.linear.x = 0.1
+
+        # #output velocities
+        # if (math.pi/2 - 0.2 < angle_rad < math.pi/2 + 0.2): #for skewed line
+        #     if (width / 2 - 110 < middle_x < width / 2 + 110):   #for off centre line
+        #         msg.linear.x = 0.2
+        #     else:
+        #         error = middle_x - width//2
+        #         msg.angular.z = float(error) * KP
+        #         msg.linear.x = 0.01
+        #         print("Error: {} | Angular Z: {}, ".format(error, msg.angular.z)) 
+        # else:
+        #     error = abs(angle_rad - math.pi/2)
+        #     msg.angular.z = float(error) * KP
+        #     msg.linear.x = 0.01
+        #     print("Error: {} | Angular Z: {}, ".format(error, msg.angular.z)) 
 
         # Print the image for 5milis, then resume execution
         cv2.waitKey(5)
@@ -199,11 +169,8 @@ if __name__ == '__main__':
     try:
         rospy.init_node('Visual_Follower')
         cmd_pub = rospy.Publisher('/cmd_vel',Twist, queue_size=10)
-        image_sub = rospy.Subscriber('usb_cam_front/image_raw',Image, image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('percy/camera1/image_raw',Image, image_callback, queue_size=10)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
-    #timer_callback()
-        #start_service = rospy.Service(Empty, 'start_follower', start_follower_callback)
-        #stop_service = rospy.Service(Empty, 'stop_follower', stop_follower_callback)
 
         rospy.spin()
     except rospy.ROSInterruptException:
