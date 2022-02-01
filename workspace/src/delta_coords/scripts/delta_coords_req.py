@@ -10,6 +10,7 @@ import numpy as np
 import math
 import cv2
 import cv_bridge
+from SendCoords.msg import SendCoordsAction, SendCoordsGoal
 
 # BGR values to filter only the selected color range
 lower_bgr_values = np.array([0,  0,  0])
@@ -49,7 +50,7 @@ def publish_coords(contours):
     if (cv2.contourArea(c) > 30):
         # calculate moments for each contour
         M = cv2.moments(c)        
-        # calculate x,y coordinate of center
+        # calculate x coordinate of center
         cX = int(M["m10"] / M["m00"])
         cY = int(M["m01"] / M["m00"])  
         msg = Point(x = cX, y = cY)
@@ -80,6 +81,12 @@ def timer_callback(boo):
             break
         else:
             publish_coords(contours)
+            client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
+            client.wait_for_server()
+
+            goal = SendCoordsGoal(order=contours)
+            client.send_goal(goal)
+            client.wait_for_result(rospy.Duration.from_sec(5.0))
 
 if __name__ == '__main__':
        
