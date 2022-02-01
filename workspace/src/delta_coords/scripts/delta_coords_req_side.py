@@ -1,6 +1,7 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import rospy
+import actionlib
 import roslib
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
@@ -10,6 +11,7 @@ import numpy as np
 import math
 import cv2
 import cv_bridge
+from SendCoords.msg import SendCoordsAction, SendCoordsGoal
 
 # BGR values to filter only the selected color range
 lower_bgr_values = np.array([0,  0,  0])
@@ -80,13 +82,20 @@ def timer_callback(boo):
             break
         else:
             publish_coords(contours)
+            client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
+            client.wait_for_server()
+
+            goal = SendCoordsGoal(order=contours)
+            client.send_goal(goal)
+            client.wait_for_result(rospy.Duraition.from_sec(5.0))
+
 
 if __name__ == '__main__':
        
     try:
         rospy.init_node('Red_Searcher')
         coord_pub = rospy.Publisher('delta_coord_req', Point, queue_size = 10)
-        image_sub = rospy.Subscriber('usb_cam_front/image_raw',Image, image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('usb_cam_side/image_raw',Image, image_callback, queue_size=10)
         #permission_sub = rospy.wait_for_message('/permission', String, timer_callback)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
 

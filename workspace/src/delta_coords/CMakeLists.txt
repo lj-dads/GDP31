@@ -10,6 +10,8 @@ project(delta_coords)
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
   rospy
+  actionlib_msgs
+  genmsg
 )
 
 ## System dependencies are found with CMake's conventions
@@ -60,17 +62,19 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+ add_action_files(
+  FILES
+   SendCoords.action
+
+)
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs
-# )
+ generate_messages(
+   DEPENDENCIES
+  geometry_msgs
+    actionlib_msgs
+    std_msgs
+ )
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -102,10 +106,11 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES delta_coords
-#  CATKIN_DEPENDS geometry_msgs rospy
+#INCLUDE_DIRS include
+# LIBRARIES delta_coords
+ CATKIN_DEPENDS geometry_msgs rospy
 #  DEPENDS system_lib
+   CATKIN_DEPENDS actionlib_msgs
 )
 
 ###########
@@ -160,6 +165,8 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/delta_coords_req.py
+   scripts/delta_coords_req_sode.py
+   scripts/delta_main_server.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
