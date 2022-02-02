@@ -52,8 +52,8 @@ def publish_coords(contours):
         M = cv2.moments(c)        
         # calculate x coordinate of center
         cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])  
-        msg = Point(x = cX, y = cY)
+        #cY = int(M["m01"] / M["m00"])  
+        msg = Point(x = cX)
         coord_pub.publish(msg)
 
 
