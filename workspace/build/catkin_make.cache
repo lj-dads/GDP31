@@ -1,2 +1,2 @@
-delta_coords:follower_visual:percy_model:percy_sim:two_wheel_robot:usb_cam
+delta_coords:follower_visual:percy_model:percy_sim:rosserial_arduino:rosserial_python:two_wheel_robot:usb_cam
 -DCATKIN_DEVEL_PREFIX=/home/louis/GDP31/workspace/devel -DCMAKE_INSTALL_PREFIX=/home/louis/GDP31/workspace/install -G Unix Makefiles

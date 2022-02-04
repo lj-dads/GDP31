@@ -56,3 +56,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/follower_visual" TYPE PROGRAM FILES "/home/louis/GDP31/workspace/build/follower_visual/catkin_generated/installspace/follower_node.py")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/follower_visual" TYPE PROGRAM FILES "/home/louis/GDP31/workspace/build/follower_visual/catkin_generated/installspace/tespublisher.py")
+endif()
+

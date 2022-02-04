@@ -2,4 +2,4 @@
 source_root_dir = '/home/louis/GDP31/workspace/src'
 whitelisted_packages = ''.split(';') if '' != '' else []
 blacklisted_packages = ''.split(';') if '' != '' else []
-underlay_workspaces = '/opt/ros/melodic'.split(';') if '/opt/ros/melodic' != '' else []
+underlay_workspaces = '/home/louis/GDP31/workspace/devel;/opt/ros/melodic'.split(';') if '/home/louis/GDP31/workspace/devel;/opt/ros/melodic' != '' else []

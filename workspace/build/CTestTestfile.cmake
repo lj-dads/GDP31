@@ -7,6 +7,8 @@
 subdirs("gtest")
 subdirs("percy_model")
 subdirs("percy_sim")
+subdirs("rosserial_arduino")
+subdirs("rosserial_python")
 subdirs("two_wheel_robot")
 subdirs("delta_coords")
 subdirs("follower_visual")

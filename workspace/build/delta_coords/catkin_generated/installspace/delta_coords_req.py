@@ -11,6 +11,7 @@ import math
 import cv2
 import cv_bridge
 
+
 # BGR values to filter only the selected color range
 lower_bgr_values = np.array([0,  0,  0])
 upper_bgr_values = np.array([50, 50, 255])
@@ -49,10 +50,10 @@ def publish_coords(contours):
     if (cv2.contourArea(c) > 30):
         # calculate moments for each contour
         M = cv2.moments(c)        
-        # calculate x,y coordinate of center
+        # calculate x coordinate of center
         cX = int(M["m10"] / M["m00"])
-        cY = int(M["m01"] / M["m00"])  
-        msg = Point(x = cX, y = cY)
+        #cY = int(M["m01"] / M["m00"])  
+        msg = Point(x = cX)
         coord_pub.publish(msg)
 
 
@@ -81,12 +82,13 @@ def timer_callback(boo):
         else:
             publish_coords(contours)
 
+
 if __name__ == '__main__':
        
     try:
         rospy.init_node('Red_Searcher')
         coord_pub = rospy.Publisher('delta_coord_req', Point, queue_size = 10)
-        image_sub = rospy.Subscriber('usb_cam_front/image_raw',Image, image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('usb_cam_underside/image_raw',Image, image_callback, queue_size=10)
         #permission_sub = rospy.wait_for_message('/permission', String, timer_callback)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
 

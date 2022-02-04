@@ -60,7 +60,7 @@ class Delta_coords:
                 #coord_pub.publish(msg)
                 client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
                 client.wait_for_server()
-                goal = SendCoordsGoal(order=contours)
+                goal = SendCoordsGoal(order=self.msg)
                 client.send_goal(goal)
                 client.wait_for_result(rospy.Duration.from_sec(5.0))
 

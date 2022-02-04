@@ -50,10 +50,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-  FILES
+ #add_message_files(
+ # FILES
   #boolean.msg
- )
+ #)
 
 ## Generate services in the 'srv' folder
  add_service_files(
@@ -154,9 +154,9 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
-rosbuild_find_ros_package(actionlib_msgs)
-include(${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake)
-genaction()
+#rosbuild_find_ros_package(actionlib_msgs)
+#include(${actionlib_msgs_PACKAGE_PATH}/cmake/actionbuild.cmake)
+#genaction()
 
 #############
 ## Install ##
@@ -169,7 +169,7 @@ genaction()
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/delta_coords_req.py
-   scripts/delta_coords_req_sode.py
+   scripts/delta_coords_req_side.py
    scripts/delta_main_server.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
