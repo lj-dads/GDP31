@@ -1,0 +1,7 @@
+set(actionlib_tools_SETUP_PY_SETUP_MODULE "setuptools")
+set(actionlib_tools_SETUP_PY_VERSION "1.13.2")
+set(actionlib_tools_SETUP_PY_SCRIPTS "")
+set(actionlib_tools_SETUP_PY_PACKAGES "actionlib_tools")
+set(actionlib_tools_SETUP_PY_PACKAGE_DIRS "src/actionlib_tools")
+set(actionlib_tools_SETUP_PY_MODULES "")
+set(actionlib_tools_SETUP_PY_MODULE_DIRS "")

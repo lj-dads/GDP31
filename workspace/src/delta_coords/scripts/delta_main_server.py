@@ -5,7 +5,7 @@ import roslib; roslib.load_manifest("rosserial_arduino")
 import rospy
 from geometry_msgs.msg import Twist, Point
 import actionlib
-#from SendCoords.msg import SendCoordsAction
+from delta_coords.msg import SendCoordsAction, SendCoordsResult
 from delta_coords.srv import *
 from std_msgs.msg import  Bool, Int32
 
@@ -19,8 +19,9 @@ Then follower node can be restarted. A delay must be placed on the delta_coords 
 
 
 class DeltaMainServer:
+   _result = SendCoordsResult()
    def __init__(self):
-      self.server = actionlib.SimpleActionServer('send_coords', Action, self.execute, False)
+      self.server = actionlib.SimpleActionServer('send_coords', SendCoordsAction, self.execute, False)
       self.server.start()
  
    def bool_callback(self, boolean): 
@@ -47,8 +48,8 @@ class DeltaMainServer:
       rospy.sleep(1)
       self.coord_point = Point()
       self.coord_point.x = self.int_x
-      self.coord_point.y = goal(0)
-      self.coord_point.z = goal(1)
+      self.coord_point.y = goal.order(0)
+      self.coord_point.z = goal.order(1)
       #self.exit_status = DeltaClient.delta_client(self.point_array)
       coord_pub.publish(self.coord_point)
       

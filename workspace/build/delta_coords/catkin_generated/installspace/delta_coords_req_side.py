@@ -49,7 +49,7 @@ class Delta_coords:
         self.msg = Point() 
         c = max(contours, key = cv2.contourArea)
         contour_centre = np.empty((0,2), int)       
-        if (cv2.contourArea(c) > 30):
+        if (cv2.contourArea(c) > 150):
             # calculate moments for each contour
             M = cv2.moments(c)        
             # calculate x,y coordinate of center
@@ -57,12 +57,12 @@ class Delta_coords:
             cY = int(M["m01"] / M["m00"])  
             self.msg = Point(x = cX, y = cY)
             if (cY <= self.width *20/35 or cY >= self.width * 20/45):
-                #coord_pub.publish(msg)
-                client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
+                coord_pub.publish(msg)
+                """ client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
                 client.wait_for_server()
-                goal = SendCoordsGoal(order=contours)
+                goal = SendCoordsGoal(order=self.msg)
                 client.send_goal(goal)
-                client.wait_for_result(rospy.Duration.from_sec(5.0))
+                client.wait_for_result(rospy.Duration.from_sec(5.0)) """
 
 
 
@@ -94,8 +94,8 @@ if __name__ == '__main__':
        
     try:
         rospy.init_node('Red_Searcher_Side')
-        #coord_pub = rospy.Publisher('delta_coord_req_side', Point, queue_size = 10)
-        image_sub = rospy.Subscriber('usb_cam_side/image_raw',Image, Delta_coords.image_callback, queue_size=10)
+        coord_pub = rospy.Publisher('delta_coord_req_side', Point, queue_size = 10)
+        image_sub = rospy.Subscriber('percy/camera_side/image_raw',Image, Delta_coords.image_callback, queue_size=10)
         #permission_sub = rospy.wait_for_message('/permission', String, timer_callback)
         timer = rospy.Timer(rospy.Duration(Delta_coords.TIMER_PERIOD), Delta_coords.timer_callback)
 

@@ -721,7 +721,7 @@
 
     
 
-<link name="camera_link">
+<link name="camera_front_link">
     <collision>
         <geometry>
             <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
@@ -734,12 +734,54 @@
     </visual>
 </link>
 
-<joint name="camera_joint" type="fixed">
+<joint name="camera_front_joint" type="fixed">
     <axis xyz="0.0 1.0 0.0"/>
-    <origin xyz="${body_length/2} 0.0 ${-body_height/2 + (camera_link_height/2)+(link_width/2)}" rpy="0.0 0.75 0.0"/>
-        <child link="camera_link"/>
+    <origin xyz="${body_length/2} 0.0 ${-7*body_height/10}" rpy="0.0 0.9 0.0"/>
+        <child link="camera_front_link"/>
         <parent link="origin"/>
 </joint>
+
+<link name="camera_side_link">
+    <collision>
+        <geometry>
+            <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+    <geometry>
+            <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
+        </geometry>
+    </visual>
+</link>
+
+<joint name="camera_side_joint" type="fixed">
+    <axis xyz="0.0 1.0 0.0"/>
+    <origin xyz="0.0 ${body_width/2} ${-body_height-0.25}" rpy="0 0 -1.56"/>
+        <child link="camera_side_link"/>
+        <parent link="origin"/>
+    </joint>
+
+<link name="camera_rear_link">
+    <collision>
+        <geometry>
+            <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
+        </geometry>
+    </collision>
+    <visual>
+    <geometry>
+            <box size="${camera_link_width} ${camera_link_length} ${camera_link_height}"/>
+        </geometry>
+    </visual>
+</link>
+
+<joint name="camera_rear_joint" type="fixed">
+    <axis xyz="0.0 1.0 0.0"/>
+    <origin xyz="${-1*body_length/2} 0.0 ${-body_height/2 + (camera_link_height/2)+(link_width/2)}" rpy="0.0 0.75 0.0"/>
+        <child link="camera_rear_link"/>
+        <parent link="origin"/>
+</joint>
+
+
  <xacro:link_wheel name="link_rear_left_wheel" />
 <xacro:joint_wheel name="joint_rear_left_wheel" child="link_rear_left_wheel" origin_xyz="${-1*((leg_length)*sin(radians(theta)))} ${body_width/2 +leg_radius*2 + (wheel_thickness/2)} ${(body_height/2)-(leg_length*cos(radians(theta)))}" />
  <xacro:link_wheel name="link_rear_right_wheel" />

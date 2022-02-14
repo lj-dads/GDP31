@@ -3,11 +3,11 @@ import queue
 import roslaunch
 import roslib; roslib.load_manifest("rosserial_arduino")
 import rospy
-from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Twist, Point
 import actionlib
-from SendCoords.msg import SendCoordsAction
+#from SendCoords.msg import SendCoordsAction
 from delta_coords.srv import *
-from std_msgs.msg import String, Bool, Int32
+from std_msgs.msg import  Bool, Int32
 
  
 
@@ -45,9 +45,12 @@ class DeltaMainServer:
       """Delta coords send string (Point(x), Point_side(y), Point_side(z))
       """
       rospy.sleep(1)
-      self.point_string = "%d, %d, %d" % (self.int_x, goal(0), goal(1))
+      self.coord_point = Point()
+      self.coord_point.x = self.int_x
+      self.coord_point.y = goal(0)
+      self.coord_point.z = goal(1)
       #self.exit_status = DeltaClient.delta_client(self.point_array)
-      coord_pub.publish(self.point_string)
+      coord_pub.publish(self.coord_point)
       
       #Recieve reply saying Delta Arm is finished
       """ rospy.sleep() until Subscribe receives message confirming Delta done
@@ -74,7 +77,7 @@ if __name__ == '__main__':
    rospy.init_node('delta_main_server')
    server = DeltaMainServer()
    cmd_pub = rospy.Publisher('/cmd_vel',Twist, queue_size=10)
-   coord_pub = rospy.Publisher('coords', String, queue_size=10)
+   coord_pub = rospy.Publisher('coords', Point, queue_size=10)
    arduino_sub = rospy.Subscriber('exit_status', Bool, server.bool_callback, queue_size=5)
    under_sub = rospy.Subscriber('delta_coord_req', Int32, server.int_callback,  queue_size = 10)
    

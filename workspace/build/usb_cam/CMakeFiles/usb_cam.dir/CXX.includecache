@@ -6,6 +6,20 @@
 
 #IncludeRegexTransform: 
 
+/home/louis/GDP31/workspace/src/common_msgs/sensor_msgs/include/sensor_msgs/fill_image.h
+sensor_msgs/Image.h
+/home/louis/GDP31/workspace/src/common_msgs/sensor_msgs/include/sensor_msgs/sensor_msgs/Image.h
+sensor_msgs/image_encodings.h
+/home/louis/GDP31/workspace/src/common_msgs/sensor_msgs/include/sensor_msgs/sensor_msgs/image_encodings.h
+
+/home/louis/GDP31/workspace/src/common_msgs/sensor_msgs/include/sensor_msgs/image_encodings.h
+cstdlib
+-
+stdexcept
+-
+string
+-
+
 /home/louis/GDP31/workspace/src/usb_cam/include/usb_cam/usb_cam.h
 asm/types.h
 -
@@ -724,20 +738,6 @@ ros/builtin_message_traits.h
 ros/message_operations.h
 -
 std_msgs/Header.h
--
-
-/opt/ros/melodic/include/sensor_msgs/fill_image.h
-sensor_msgs/Image.h
-/opt/ros/melodic/include/sensor_msgs/sensor_msgs/Image.h
-sensor_msgs/image_encodings.h
-/opt/ros/melodic/include/sensor_msgs/sensor_msgs/image_encodings.h
-
-/opt/ros/melodic/include/sensor_msgs/image_encodings.h
-cstdlib
--
-stdexcept
--
-string
 -
 
 /opt/ros/melodic/include/std_msgs/Header.h

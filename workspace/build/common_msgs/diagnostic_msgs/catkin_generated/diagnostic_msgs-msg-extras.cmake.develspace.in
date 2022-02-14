@@ -1,0 +1,2 @@
+set(diagnostic_msgs_MESSAGE_FILES "/home/louis/GDP31/workspace/src/common_msgs/diagnostic_msgs/msg/DiagnosticArray.msg;/home/louis/GDP31/workspace/src/common_msgs/diagnostic_msgs/msg/DiagnosticStatus.msg;/home/louis/GDP31/workspace/src/common_msgs/diagnostic_msgs/msg/KeyValue.msg")
+set(diagnostic_msgs_SERVICE_FILES "/home/louis/GDP31/workspace/src/common_msgs/diagnostic_msgs/srv/AddDiagnostics.srv;/home/louis/GDP31/workspace/src/common_msgs/diagnostic_msgs/srv/SelfTest.srv")

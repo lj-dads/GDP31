@@ -47,7 +47,7 @@ def publish_coords(contours):
     global msg 
     c = max(contours, key = cv2.contourArea)
     contour_centre = np.empty((0,2), int)       
-    if (cv2.contourArea(c) > 30):
+    if (cv2.contourArea(c) > 150):
         # calculate moments for each contour
         M = cv2.moments(c)        
         # calculate x coordinate of center
@@ -76,7 +76,6 @@ def timer_callback(boo):
         cv2.imshow('mask', mask)
         cv2.waitKey(5)
         image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
-        print len(contours)
         if len(contours) < 1:
             break
         else:
@@ -88,7 +87,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('Red_Searcher')
         coord_pub = rospy.Publisher('delta_coord_req', Point, queue_size = 10)
-        image_sub = rospy.Subscriber('usb_cam_underside/image_raw',Image, image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('percy/camera_rear/image_raw',Image, image_callback, queue_size=10)
         #permission_sub = rospy.wait_for_message('/permission', String, timer_callback)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
 

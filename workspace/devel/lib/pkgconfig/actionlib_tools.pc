@@ -1,0 +1,8 @@
+prefix=/home/louis/GDP31/workspace/devel
+
+Name: actionlib_tools
+Description: Description of actionlib_tools
+Version: 1.13.2
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

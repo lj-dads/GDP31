@@ -23,12 +23,12 @@ LINEAR_SPEED = 0.2
 
 # Proportional constant to be applied on speed when turning 
 # (Multiplied by the error value)
-KP = 1.5/10
+KP = 1.5/1000
 # If the line is completely lost, the error value shall be compensated by:
 LOSS_FACTOR = 1.2
 
 # Send msgs every $TIMER_PERIOD seconds
-TIMER_PERIOD = 0.06
+TIMER_PERIOD = 0.05
 
 
 # The maximum error value for which the robot is still in a straight line
@@ -132,10 +132,8 @@ def timer_callback(boo):
         middle_x = (height/2 - constant)/m
                 
 
-        if ((width / 2 - 110 > middle_x) ):
-            msg.angular.z = 1.0 * KP
-        elif( (middle_x > width / 2 + 110)):
-            msg.angular.z = 1.0 * -KP
+        if ((width / 2 - 110 > middle_x) or (middle_x > width / 2 + 110)):
+            msg.angular.z = ((width/2)-middle_x) * KP
         else:
             msg.linear.x = 0.1
 
@@ -169,7 +167,7 @@ if __name__ == '__main__':
     try:
         rospy.init_node('Visual_Follower')
         cmd_pub = rospy.Publisher('/cmd_vel',Twist, queue_size=10)
-        image_sub = rospy.Subscriber('percy/camera1/image_raw',Image, image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('percy/camera_front/image_raw',Image, image_callback, queue_size=10)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
 
         rospy.spin()
