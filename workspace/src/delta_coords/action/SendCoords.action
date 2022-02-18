@@ -1,5 +1,6 @@
 # Define the goal
-geometry_msgs/Point[] frontal_coord  
+int32 x 
+int32 y 
 ---
 # Define the result
 uint32 binary_result

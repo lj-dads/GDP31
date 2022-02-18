@@ -49,7 +49,7 @@ class Delta_coords:
         self.msg = Point() 
         c = max(contours, key = cv2.contourArea)
         contour_centre = np.empty((0,2), int)       
-        if (cv2.contourArea(c) > 150):
+        if (cv2.contourArea(c) > 300):
             # calculate moments for each contour
             M = cv2.moments(c)        
             # calculate x,y coordinate of center
@@ -60,7 +60,9 @@ class Delta_coords:
                 #coord_pub.publish(self.msg)
                 client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
                 client.wait_for_server()
-                goal = SendCoordsGoal(order=self.msg)
+                goal = SendCoordsGoal()
+                goal.x = cX
+                goal.y = cY
                 client.send_goal(goal)
                 client.wait_for_result(rospy.Duration.from_sec(5.0)) 
 
@@ -81,7 +83,7 @@ class Delta_coords:
             mask = cv2.bitwise_or(mask1, mask2 )
             #mask = cv2.inRange(img, lower_bgr_values, upper_bgr_values)
             cv2.imshow('window',img)
-            cv2.imshow('mask', mask)
+            #cv2.imshow('mask', mask)
             cv2.waitKey(5)
             image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
             if len(contours) < 1:

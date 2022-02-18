@@ -3,8 +3,8 @@
 import rospy
 import roslib
 from sensor_msgs.msg import Image
-from std_msgs.msg import String
-from geometry_msgs.msg import Point
+from std_msgs.msg import Int32
+#from geometry_msgs.msg import Point
 import time
 import numpy as np
 import math
@@ -29,7 +29,7 @@ def crop_size(height, width):
 
 # Global vars. initial values
 image_input = 0
-msg = Point()
+msg = Int32()
 # Send msgs every $TIMER_PERIOD seconds
 TIMER_PERIOD = 1
 
@@ -47,13 +47,13 @@ def publish_coords(contours):
     global msg 
     c = max(contours, key = cv2.contourArea)
     contour_centre = np.empty((0,2), int)       
-    if (cv2.contourArea(c) > 150):
+    if (cv2.contourArea(c) > 300):
         # calculate moments for each contour
         M = cv2.moments(c)        
         # calculate x coordinate of center
         cX = int(M["m10"] / M["m00"])
         #cY = int(M["m01"] / M["m00"])  
-        msg = Point(x = cX)
+        msg = cX
         coord_pub.publish(msg)
 
 
@@ -73,7 +73,7 @@ def timer_callback(boo):
         mask2 = cv2.inRange(img_hsv, (175,50,20), (180,255,255))
         mask = cv2.bitwise_or(mask1, mask2 )
         #mask = cv2.inRange(img, lower_bgr_values, upper_bgr_values)
-        cv2.imshow('mask', mask)
+        #cv2.imshow('mask', mask)
         cv2.waitKey(5)
         image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
         if len(contours) < 1:
@@ -86,7 +86,7 @@ if __name__ == '__main__':
        
     try:
         rospy.init_node('Red_Searcher')
-        coord_pub = rospy.Publisher('delta_coord_req', Point, queue_size = 10)
+        coord_pub = rospy.Publisher('delta_coord_req', Int32, queue_size = 10)
         image_sub = rospy.Subscriber('percy/camera_rear/image_raw',Image, image_callback, queue_size=10)
         #permission_sub = rospy.wait_for_message('/permission', String, timer_callback)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)

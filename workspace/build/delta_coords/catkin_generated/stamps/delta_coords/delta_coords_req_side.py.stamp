@@ -11,7 +11,7 @@ import numpy as np
 import math
 import cv2
 import cv_bridge
-from SendCoords.action import SendCoordsAction, SendCoordsGoal
+from delta_coords.msg import SendCoordsAction, SendCoordsGoal
 
 class Delta_coords:
 
@@ -45,7 +45,7 @@ class Delta_coords:
         self.image_input = self.bridge.imgmsg_to_cv2(msg,desired_encoding='bgr8')
         # node.get_logger().info('Received image')
 
-    def publish_coords(self, contours):
+    def publish_coords(self, contours, width):
         self.msg = Point() 
         c = max(contours, key = cv2.contourArea)
         contour_centre = np.empty((0,2), int)       
@@ -56,17 +56,19 @@ class Delta_coords:
             cX = int(M["m10"] / M["m00"])
             cY = int(M["m01"] / M["m00"])  
             self.msg = Point(x = cX, y = cY)
-            if (cY <= self.width *20/35 or cY >= self.width * 20/45):
-                coord_pub.publish(msg)
-                """ client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
+            if (cY <= width *20/35 or cY >= width * 20/45):
+                #coord_pub.publish(self.msg)
+                client = actionlib.SimpleActionClient('send_coords', SendCoordsAction)
                 client.wait_for_server()
-                goal = SendCoordsGoal(order=self.msg)
+                goal = SendCoordsGoal()
+                goal.x = cX
+                goal.y = cY
                 client.send_goal(goal)
-                client.wait_for_result(rospy.Duration.from_sec(5.0)) """
+                client.wait_for_result(rospy.Duration.from_sec(5.0)) 
 
 
 
-    def timer_callback(self, boo):
+    def timer_callback(self,boo):
         var = 1
         while var < 2:
             # Wait for the first image to be received
@@ -80,13 +82,14 @@ class Delta_coords:
             mask2 = cv2.inRange(img_hsv, (175,50,20), (180,255,255))
             mask = cv2.bitwise_or(mask1, mask2 )
             #mask = cv2.inRange(img, lower_bgr_values, upper_bgr_values)
-            cv2.imshow('mask', mask)
+            cv2.imshow('window',img)
+            #cv2.imshow('mask', mask)
             cv2.waitKey(5)
             image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
             if len(contours) < 1:
                 break
             else:
-                self.publish_coords(contours)
+                self.publish_coords(contours, width)
 
 
 
@@ -94,10 +97,11 @@ if __name__ == '__main__':
        
     try:
         rospy.init_node('Red_Searcher_Side')
+        d = Delta_coords()
         coord_pub = rospy.Publisher('delta_coord_req_side', Point, queue_size = 10)
-        image_sub = rospy.Subscriber('percy/camera_side/image_raw',Image, Delta_coords.image_callback, queue_size=10)
+        image_sub = rospy.Subscriber('percy/camera_side/image_raw',Image, d.image_callback, queue_size=10)
         #permission_sub = rospy.wait_for_message('/permission', String, timer_callback)
-        timer = rospy.Timer(rospy.Duration(Delta_coords.TIMER_PERIOD), Delta_coords.timer_callback)
+        timer = rospy.Timer(rospy.Duration(d.TIMER_PERIOD), d.timer_callback)
 
         rospy.spin()
     except rospy.ROSInterruptException:

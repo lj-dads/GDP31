@@ -1,4 +1,6 @@
 (cl:in-package delta_coords-msg)
-(cl:export '(FRONTAL_COORD-VAL
-          FRONTAL_COORD
+(cl:export '(X-VAL
+          X
+          Y-VAL
+          Y
 ))

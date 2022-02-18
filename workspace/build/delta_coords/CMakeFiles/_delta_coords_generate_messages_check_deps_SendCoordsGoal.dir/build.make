@@ -54,7 +54,7 @@ CMAKE_BINARY_DIR = /home/louis/GDP31/workspace/build
 include delta_coords/CMakeFiles/_delta_coords_generate_messages_check_deps_SendCoordsGoal.dir/progress.make
 
 delta_coords/CMakeFiles/_delta_coords_generate_messages_check_deps_SendCoordsGoal:
-	cd /home/louis/GDP31/workspace/build/delta_coords && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py delta_coords /home/louis/GDP31/workspace/devel/share/delta_coords/msg/SendCoordsGoal.msg geometry_msgs/Point
+	cd /home/louis/GDP31/workspace/build/delta_coords && ../catkin_generated/env_cached.sh /usr/bin/python2 /opt/ros/melodic/share/genmsg/cmake/../../../lib/genmsg/genmsg_check_deps.py delta_coords /home/louis/GDP31/workspace/devel/share/delta_coords/msg/SendCoordsGoal.msg 
 
 _delta_coords_generate_messages_check_deps_SendCoordsGoal: delta_coords/CMakeFiles/_delta_coords_generate_messages_check_deps_SendCoordsGoal
 _delta_coords_generate_messages_check_deps_SendCoordsGoal: delta_coords/CMakeFiles/_delta_coords_generate_messages_check_deps_SendCoordsGoal.dir/build.make

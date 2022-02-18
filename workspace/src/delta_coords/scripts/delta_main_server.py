@@ -11,10 +11,9 @@ from std_msgs.msg import  Bool, Int32
 
  
 
-""" Idea of this is the server will recieve a coordinate from the front camera for a red plant.
-It will then stop the Visual Line Follower node.
-The rover will then slowly move in a straight line until the side camera can see the red plant. Maintains axial coord from the front cam.
-Both coords will be sent to the delta arm arduino code which will reply with a completed message once it has carried out its service.
+""" Idea of this is the server will recieve a coordinate from the side camera for a red plant.
+It will then stop the Visual Line Follower node. Finds axial coord from the front cam.
+3 coords will be sent to the delta arm arduino code which will reply with a completed message once it has carried out its service.
 Then follower node can be restarted. A delay must be placed on the delta_coords restart to prevent a loop occuring. """
 
 
@@ -23,60 +22,78 @@ class DeltaMainServer:
    def __init__(self):
       self.server = actionlib.SimpleActionServer('send_coords', SendCoordsAction, self.execute, False)
       self.server.start()
- 
+
+      """ self.node = roslaunch.core.Node('follower_visual','follower_node.py')
+      self.launch = roslaunch.scriptapi.ROSLaunch()
+      self.launch.start()
+      self.process = self.launch.launch(self.node) """
+
    def bool_callback(self, boolean): 
-      self.boolean_val = boolean
-   
+      self.boolean_val = boolean.data
+      rospy.loginfo(self.boolean_val)
+
    def int_callback(self, intx): 
       self.int_x = intx
+
+   def block_visual_follower(self, condition):
+      stopcmd = Bool()
+      stopcmd = condition
+      blocker_pub.publish(stopcmd)
 
    def execute(self, goal):
    # Do lots of awesome groundbreaking robot stuff here
       
       #Stop Visual Line Follower and Rover
-      self.node = roslaunch.core.Node('follower_visual','Visual Follower')
-      self.launch = roslaunch.scriptapi.ROSLaunch()
-      process = self.launch.launch(self.node)
-      process.stop()
-
+      """ self.stopper = 1
+      self.blocker()
+      self.process.stop() """
+      self.block_visual_follower(True)
       self.msg = Twist()
       self.msg.linear.x = 0
+      self.msg.angular.z = 0
+      cmd_pub.publish(self.msg)
 
       #Send coords to Delta Arm module
-      """Delta coords send string (Point(x), Point_side(y), Point_side(z))
-      """
       rospy.sleep(1)
       self.coord_point = Point()
-      self.coord_point.x = self.int_x
-      self.coord_point.y = goal.order(0)
-      self.coord_point.z = goal.order(1)
-      #self.exit_status = DeltaClient.delta_client(self.point_array)
+      self.coord_point.x = goal.x
+      self.coord_point.y = self.int_x.data
+      self.coord_point.z = goal.y
       coord_pub.publish(self.coord_point)
-      
+      self.boolean_val = False
+
       #Recieve reply saying Delta Arm is finished
       """ rospy.sleep() until Subscribe receives message confirming Delta done
       maybe find another method for this actually """
-      while(self.boolean_val == False):
+      while(self.boolean_val != True):
          rospy.sleep(0.5)
 
       #Restart Visual Node
+
+      self.block_visual_follower(False)
+      """self.node = roslaunch.core.Node('follower_visual','follower_node.py')
+      self.launch = roslaunch.scriptapi.ROSLaunch()
       self.launch.start()
+      self.process = self.launch.launch(self.node)
+      self.stopper = 0 """
+      rospy.sleep(5)
       self.server.set_succeeded()
  
+"""    def blocker(self):
+      while (self.stopper == 1):
+         rospy.loginfo(self.stopper)
+         node = roslaunch.core.Node('topic_tools','drop', args='cmd_vel 1 1 cmd_vel')
+         launch = roslaunch.scriptapi.ROSLaunch()
+         launch.start()
+         process = launch.launch(node)
 
-""" class DeltaClient:
-   def delta_client(self,point_array):
-      rospy.wait_for_service('delta_arduino')
-      try:
-         self.actuate = rospy.ServiceProxy('delta_arduino', Test)
-         self.exit_status = self.actuate(point_array)
-         return self.exit_status.output
-      except rospy.ServiceException as e:
-         print("Service call failed: %s"%e) """
+      process.stop() """
+
 
 if __name__ == '__main__':
    rospy.init_node('delta_main_server')
    server = DeltaMainServer()
+   blocker_pub = rospy.Publisher('/block', Bool, queue_size=10)
    cmd_pub = rospy.Publisher('/cmd_vel',Twist, queue_size=10)
    coord_pub = rospy.Publisher('coords', Point, queue_size=10)
    arduino_sub = rospy.Subscriber('exit_status', Bool, server.bool_callback, queue_size=5)

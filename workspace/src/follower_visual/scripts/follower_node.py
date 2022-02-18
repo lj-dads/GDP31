@@ -4,6 +4,7 @@ import rospy
 import roslib
 import tf.transformations
 from sensor_msgs.msg import Image
+from std_msgs.msg import Bool
 from geometry_msgs.msg import Twist
 import time
 import numpy as np
@@ -51,6 +52,7 @@ def crop_size(height, width):
 # Global vars. initial values
 image_input = 0
 error = 0
+blocker = False
 msg = Twist()
 
 def nothing(n):
@@ -68,7 +70,7 @@ def image_callback(msg):
 
 def get_contour_data(img):
     mask = cv2.inRange(img, lower_bgr_values, upper_bgr_values)
-    cv2.imshow('windo2qw',mask)
+    #cv2.imshow('windo2qw',mask)
 
     image ,contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_L1)
     contour_centres = np.empty((0,2), int)       
@@ -86,15 +88,20 @@ def get_contour_data(img):
 def turn_body():
     global msg
     msg.linear.x = 0
-    msg.angular.z = 2
+    msg.angular.z = 1
     cmd_pub.publish(msg)
 
+def bool_callback(boolean): 
+    global blocker
+    blocker = boolean.data
+    rospy.loginfo(blocker)
 
 def timer_callback(boo):
     var = 1
     while var < 2:
         global msg
         global error
+        global blocker
         global image_input
         # Wait for the first image to be received
         if type(image_input) != np.ndarray:
@@ -105,10 +112,7 @@ def timer_callback(boo):
         #get contour centres from image
         contour_centres = get_contour_data(img)  
 
-        ##need this if statement to get a new image from subscriber to feed back into 
-        ##timer_callback
-
-
+        ##need this if statement to get a new image from subscriber to feed back into timer_callback
         if contour_centres.size == 0:
             turn_body()
             time.sleep(0.1)
@@ -156,7 +160,9 @@ def timer_callback(boo):
         cv2.waitKey(5)
 
             # Publish the msg to 'cmd_vel'
-        cmd_pub.publish(msg)
+        if (blocker != True):
+            cmd_pub.publish(msg)
+        
         var += 1
 
 
@@ -166,6 +172,7 @@ if __name__ == '__main__':
        
     try:
         rospy.init_node('Visual_Follower')
+        blocker_sub = rospy.Subscriber('/block', Bool, bool_callback, queue_size = 10)
         cmd_pub = rospy.Publisher('/cmd_vel',Twist, queue_size=10)
         image_sub = rospy.Subscriber('percy/camera_front/image_raw',Image, image_callback, queue_size=10)
         timer = rospy.Timer(rospy.Duration(TIMER_PERIOD), timer_callback)
