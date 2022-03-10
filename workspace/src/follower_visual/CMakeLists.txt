@@ -163,7 +163,7 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
  catkin_install_python(PROGRAMS
    scripts/follower_node.py
-   scripts/tespublisher.py
+   scripts/camera_test_rl.py
    DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

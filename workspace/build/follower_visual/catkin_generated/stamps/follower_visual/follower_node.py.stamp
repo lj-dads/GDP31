@@ -88,7 +88,7 @@ def get_contour_data(img):
 def turn_body():
     global msg
     msg.linear.x = 0
-    msg.angular.z = 2
+    msg.angular.z = 1
     cmd_pub.publish(msg)
 
 def bool_callback(boolean): 

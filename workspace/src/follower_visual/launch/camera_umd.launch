@@ -1,20 +1,22 @@
 <?xml version="1.0"?>
 <launch>
- <!--   <node name="usb_cam_front" pkg="usb_cam" type="usb_cam_node" required="true"  output="screen" >
+    <node name="usb_cam_front" pkg="usb_cam" type="usb_cam_node" required="true"  output="screen" >
     <param name="video_device" value="/dev/video0" />
     <param name="image_width" value="640" />
     <param name="image_height" value="480" />
     <param name="pixel_format" value="yuyv" />
     <param name="camera_frame_id" value="usb_cam" />
     <param name="io_method" value="mmap"/>
-   </node> -->  
+   </node>   
 
-   <arg name="node_start_delay" default="3.0" />  
+    <arg name="node_start_delay" default="3.0" />  
 
-   <node pkg="follower_visual" type="follower_node.py" name="follower_vs" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+   <!--<node pkg="follower_visual" type="follower_node.py" name="follower_vs" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
    </node>
 
    <node pkg="delta_coords" type="delta_coords_req_side.py" name="red_searcher" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
+   </node>  -->
+   <node pkg="follower_visual" type="camera_test_rl.py" name="red_searcher" output="screen" launch-prefix="bash -c 'sleep $(arg node_start_delay); $0 $@' ">
    </node> 
 
 </launch>

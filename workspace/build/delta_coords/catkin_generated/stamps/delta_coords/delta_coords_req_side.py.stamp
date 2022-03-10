@@ -49,7 +49,7 @@ class Delta_coords:
         self.msg = Point() 
         c = max(contours, key = cv2.contourArea)
         contour_centre = np.empty((0,2), int)       
-        if (cv2.contourArea(c) > 150):
+        if (cv2.contourArea(c) > 300):
             # calculate moments for each contour
             M = cv2.moments(c)        
             # calculate x,y coordinate of center

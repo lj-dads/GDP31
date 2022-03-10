@@ -47,7 +47,7 @@ class DeltaMainServer:
       """ self.stopper = 1
       self.blocker()
       self.process.stop() """
-      self.block_visual_follower(self, True)
+      self.block_visual_follower(True)
       self.msg = Twist()
       self.msg.linear.x = 0
       self.msg.angular.z = 0
@@ -60,7 +60,7 @@ class DeltaMainServer:
       self.coord_point.y = self.int_x.data
       self.coord_point.z = goal.y
       coord_pub.publish(self.coord_point)
-      rospy.sleep(10)
+      self.boolean_val = False
 
       #Recieve reply saying Delta Arm is finished
       """ rospy.sleep() until Subscribe receives message confirming Delta done
@@ -70,12 +70,13 @@ class DeltaMainServer:
 
       #Restart Visual Node
 
-      self.block_visual_follower(self, False)
+      self.block_visual_follower(False)
       """self.node = roslaunch.core.Node('follower_visual','follower_node.py')
       self.launch = roslaunch.scriptapi.ROSLaunch()
       self.launch.start()
       self.process = self.launch.launch(self.node)
       self.stopper = 0 """
+      rospy.sleep(5)
       self.server.set_succeeded()
  
 """    def blocker(self):
