@@ -6,30 +6,42 @@ import ICM20948 #Gyroscope/Acceleration/Magnetometer
 import BME280   #Atmospheric Pressure/Temperature and humidity
 import SI1145   #UV
 import TSL2591  #LIGHT
-import ADS1015  #ad
+#import ADS1015  #ad
 import SGP40 #VOC
 import rospy
 from PIL import Image,ImageDraw,ImageFont
 import math
 import csv
-f = open("envi_data.csv","w", newline="") #csv file
-wc = csv.writer(f) #csv function
+
 
 
 bme280 = BME280.BME280()
 bme280.get_calib_param()
 light = TSL2591.TSL2591()
 si1145 = SI1145.SI1145()
-ad = ADS1015.ADS1015()
+#ad = ADS1015.ADS1015()
 sgp40 = SGP40.SGP40()
 oled = SH1106.SH1106()
 icm20948 = ICM20948.ICM20948()
 
 class Environment:
+	f = open('/home/gdp31/GDP31/workspace/src/sensing/src/envi_data.csv','w+') #csv file
+	wc = csv.writer(f) #csv function
 	image = Image.new('1', (oled.width, oled.height), "BLACK")
 	draw = ImageDraw.Draw(image)
 	x = 0
-	font = ImageFont.truetype('Font.ttc', 10)
+	font = ImageFont.truetype('/home/gdp31/GDP31/workspace/src/sensing/src/Font.ttc', 10)
+	bme = []
+	bme = bme280.readData()
+	pressure = round(bme[0], 2) 
+	temp = round(bme[1], 2) 
+	hum = round(bme[2], 2)
+	lux = round(light.Lux(), 2)
+	uv = round(si1145.readdata()[0], 2) 
+	ir = round(si1145.readdata()[1], 2)
+	#voc = round(sgp40.readata(), 2)
+	row_list = [pressure,temp,hum, lux, uv, ir]
+	wc.writerow(row_list) #write data into csv
 
 	def timer_callback(self, boo):
 		bme = []
@@ -40,8 +52,10 @@ class Environment:
 		lux = round(light.Lux(), 2)
 		uv = round(si1145.readdata()[0], 2) 
 		ir = round(si1145.readdata()[1], 2)
-		voc = round(sgp40.readata(), 2)
-		wc.writerow(pressure,temp,hum, lux, uv, ir, voc) #write data into csv
+		#voc = round(sgp40.readata(), 2)
+		row_list = [pressure,temp,hum, lux, uv, ir]
+		self.wc.writerow(row_list) #write data into csv
+
 
 	def screen(self):
 		icm = []
@@ -49,10 +63,9 @@ class Environment:
 		roll = round(icm[0], 2)
 		pitch = round(icm[1], 2)
 		yaw = round(icm[2], 2)
-		f.close()
-		x += 1
-		if(x < 20):
-			SoundAD = []
+		self.x += 1
+		if(self.x < 20):
+			"""SoundAD = []
 			Sound_normal = 3300 / 2 #1.65v
 			for i in range(10):
 				SoundAD.append(abs(ad.ADS1015_SINGLE_READ(3) * 2 - Sound_normal))
@@ -60,7 +73,7 @@ class Environment:
 			SoundAD.sort()
 			SoundAD = SoundAD[1:-1]
 			Sound_ave = sum(SoundAD)/len(SoundAD)
-			Sound = Sound_ave / 50
+			Sound = Sound_ave / 50"""
 			
 			self.draw.rectangle((0, 0, 128, 64), fill = 0)
 			
@@ -79,11 +92,11 @@ class Environment:
 			self.draw.text((65, 15), str(self.ir), font = self.font, fill = 1)
 			self.draw.text((105, 15), 'IR', font = self.font, fill = 1)
 			
-			self.draw.text((85, 45), str(Sound), font = self.font, fill = 1)
-			self.draw.text((70, 30), 'Sound', font = self.font, fill = 1)
+			"""self.draw.text((85, 45), str(Sound), font = self.font, fill = 1)
+			self.draw.text((70, 30), 'Sound', font = self.font, fill = 1)"""
 
 			oled.display(self.image)
-		elif(x>20 & x<40):
+		elif(self.x>20 & self.x<40):
 			
 			
 			self.draw.rectangle((0, 0, 128, 64), fill = 0)
@@ -122,8 +135,11 @@ class Environment:
 if __name__ == '__main__':
        
     try:
-        Environment.timer = rospy.Timer(rospy.Duration(1), Environment.timer_callback)
-        Environment.screen()
+	class_enviro = Environment()
+	rospy.init_node('Enviro_module')
+        class_enviro.timer = rospy.Timer(rospy.Duration(1), class_enviro.timer_callback)
+        class_enviro.screen()
         rospy.spin()
     except rospy.ROSInterruptException:
+	class_enviro.f.close()
         pass
