@@ -137,7 +137,9 @@ def timer_callback(boo):
                 
 
         if ((width / 2 - 110 > middle_x) or (middle_x > width / 2 + 110)):
-            msg.angular.z = ((width/2)-middle_x) * KP
+            angle_rate = ((width/2)-middle_x) * KP
+            if (angle_rate < 1.7): #safety value for turning
+                msg.angular.z = angle_rate
         else:
             msg.linear.x = 0.1
 
