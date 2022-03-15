@@ -10,6 +10,7 @@ import SGP40 #VOC
 import rospy
 from PIL import Image,ImageDraw,ImageFont
 import math
+from geometry_msgs.msg import Point
 import csv
 from ctypes import *
 c_file = '/home/gdp31/GDP31/workspace/src/sensing/src/gas_index.so'
@@ -29,6 +30,8 @@ class Environment:
 	image = Image.new('1', (oled.width, oled.height), "BLACK")
 	draw = ImageDraw.Draw(image)
 	x = 0
+	Voltage = 0
+	Current = 0
 	font = ImageFont.truetype('/home/gdp31/GDP31/workspace/src/sensing/src/Font.ttc', 10)
 	bme = []
 	bme = bme280.readData()
@@ -39,14 +42,18 @@ class Environment:
 	uv = round(si1145.readdata()[0], 2) 
 	ir = round(si1145.readdata()[1], 2)
 	voc = round(sgp40.raw(), 2)
-	row_list = [pressure,temp,hum, lux, uv, ir]
-	row_label = ['pressure','temp','hum', 'lux', 'uv', 'ir','voc']
+	row_list = [pressure,temp,hum, lux, uv, ir, voc, voltage, current]
+	row_label = ['pressure','temp','hum', 'lux', 'uv', 'ir','voc', 'voltage', 'current']
 	wc.writerow(row_label)
 	wc.writerow(row_list) #write data into csv
 	
 	def VOCAlg(self,voc):
 		voc_algorithm = index_c.gas_index(int(voc))
 		return voc_algorithm
+	
+	def batt_callback(self,vals):
+		self.Voltage = vals.x
+		self.Current = vals.y
 	
 	def timer_callback(self, boo):
 		bme = []
@@ -59,7 +66,7 @@ class Environment:
 		ir = round(si1145.readdata()[1], 2)
 		voc = round(sgp40.raw(), 2)
 		voc_index = self.VOCAlg(voc)
-		row_list = [pressure,temp,hum, lux, uv, ir, voc_index]
+		row_list = [pressure,temp,hum, lux, uv, ir, voc_index, self.voltage, self.current]
 		self.wc.writerow(row_list) #write data into csv
 
 
@@ -99,6 +106,10 @@ class Environment:
 			self.draw.text((105, 15), 'IR', font = self.font, fill = 1)
 			#self.draw.text((65, 30), str(voc_index), font = self.font, fill = 1)
 			#self.draw.text((105, 30), 'VOC', font = self.font, fill = 1)
+			self.draw.text((65, 30), str(Voltage), font = self.font, fill = 1)
+			self.draw.text((105, 30), 'Voltage', font = self.font, fill = 1)
+			#self.draw.text((65, 30), str(self.Current), font = self.font, fill = 1)
+			#self.draw.text((105, 30), 'self.Current', font = self.font, fill = 1)
 
 			oled.display(self.image)
 			
@@ -114,7 +125,7 @@ if __name__ == '__main__':
 	class_enviro = Environment()
 	rospy.init_node('Enviro_module')
         class_enviro.timer = rospy.Timer(rospy.Duration(1), class_enviro.timer_callback)
-	print("Hi")
+	bat_sub = rospy.Subscriber("battery_status", Point, class_enviro.batt_callback)
         class_enviro.screen()
         rospy.spin()
     rospy.on_shutdown(class_enviro.myhook)
