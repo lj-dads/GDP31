@@ -1,0 +1,20 @@
+robot_joint_publisher:
+  type: "joint_state_controller/JointStateController"
+  publish_rate: 50
+four_wheel_steering_controller:
+  type: "four_wheel_steering_controller/FourWheelSteeringController"
+  front_wheel: ['joint_front_left_wheel', 'joint_front_right_wheel']
+  rear_wheel: ['joint_rear_left_wheel', 'joint_rear_right_wheel']
+  front_steering: ['steering_joint_front_left', 'steering_joint_front_right']
+  rear_steering: ['steering_joint_rear_left', 'steering_joint_rear_right']
+  publish_rate: 50
+  pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+  twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+  cmd_vel_timeout: 25.0 # not tested here
+
+  # Base frame_id
+  base_frame_id: origin
+
+  # Odometry fused with IMU is published by robot_localization, so
+  # no need to publish a TF based on encoders alone.
+  enable_odom_tf: false

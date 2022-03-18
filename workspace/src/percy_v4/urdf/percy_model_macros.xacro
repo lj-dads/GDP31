@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+        <xacro:macro name="link_wheel" params="name">
+        <link name="${name}">
+            <inertial>
+              <mass value="${wheel_mass}"/>
+              <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
+              <xacro:cylinder_inertia mass="${wheel_mass}" r="${wheel_radius}" l="${wheel_thickness}"/>
+              <!-- <inertia ixx="0.0011633" ixy="0.0" ixz="0.0" iyy="0.0011633" iyz="0.0" izz="0.002"/> -->
+              <!-- <inertia ixx="0.000526666666667" ixy="0" ixz="0" iyy="0.000526666666667" iyz="0" izz="0.001"/> -->
+            </inertial>
+            <collision name="link_right_wheel_collision">
+              <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
+              <geometry>
+                <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+              </geometry>
+     
+              
+                <surface>
+                  <friction>
+              <ode>
+                <mu1>1.0</mu1>
+                <mu2>0.0</mu2>
+               <fdir1>0 1 0</fdir1>
+             </ode>
+              </friction>
+              </surface>
+            </collision>
+            <visual name="${name}_visual">
+              <origin rpy="0 1.5707 1.5707" xyz="0 0 0"/>
+              <geometry>
+                <cylinder length="${wheel_thickness}" radius="${wheel_radius}"/>
+              </geometry>
+            </visual>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="joint_wheel" params="name child origin_xyz parent">
+      <joint name="${name}" type="continuous">
+        <origin rpy="0 0 0" xyz="${origin_xyz}"/>
+        <child link="${child}"/>
+        <parent link="${parent}"/>
+        <axis rpy="0 0 0" xyz="0 1 0"/>
+<limit effort="10000" velocity="1000"/>
+        <joint_properties damping="1.0" friction="1.0"/>
+      </joint>
+
+            		<transmission name="${name}_wheel_trans" type="SimpleTransmission">
+			<type>transmission_interface/SimpleTransmission</type>
+			<actuator name="${name}_wheel_motor">
+				<mechanicalReduction>1</mechanicalReduction>
+			</actuator>
+			<joint name="${name}">
+				<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+			</joint>
+		</transmission>
+    </xacro:macro>
+    
+<!-- <joint name="r_right_wheel_joint" type="continuous">
+
+       <origin xyz="-0.15 -0.2 0.0" rpy="0.0 0.0 0.0"/>
+  <axis xyz="0.0 1 0.0" rpy="0.0 0.0 0.0"/>
+  <parent link="chassis"/>
+  <child link="r_right_wheel"/>
+  <limit effort="10000" velocity="1000"/>
+        <joint_properties damping="1.0" friction="1.0"/>
+</joint>  -->
+
+    <xacro:macro name="cylinder_inertia" params="r l mass">
+    <xacro:property name="calc_cylinder_mass" value="${density*(pi*(r**2)*l)}"/>
+    <mass value="${mass}"/>
+      <inertia  ixx="${mass*(3*r*r+l*l)/12}" ixy = "0" ixz = "0"
+                iyy="${mass*(3*r*r+l*l)/12}" iyz = "0"
+                izz="${mass*(r*r)/2}" />
+    </xacro:macro>
+
+<xacro:macro name="link_inertia" params="length width height">
+<xacro:property name="calc_mass" value="${density*(length*width*height)}"/>
+<mass value="${calc_mass}"/>
+
+  <inertia ixx="${(calc_mass/12)*(length**2 + height**2)}" ixy="0.0" ixz="0.0" iyy="${(calc_mass/12)*(width**2 + height**2)}" iyz="0.0" izz="${(calc_mass/12)*(width**2 + length**2)}"/>
+
+</xacro:macro>
+
+  <xacro:macro name="steering_link" params="name">
+      <link name="${name}">
+
+        <inertial>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+          <mass value="0.5"/>
+          <inertia ixx="0.0008333" ixy="0.0" ixz="0.0008333" iyy="0.0" iyz="0.0" izz="0.0008333"/>
+
+        </inertial>
+
+        <collision>
+          <origin rpy="0 0 0" xyz="0 0 0"/>
+          <geometry>
+            <box size="0.1 0.1 0.1"/>
+          </geometry>
+
+        </collision>
+
+        <visual>
+          <origin rpy="0 0 0" xyz="0 0 0"/>
+          <geometry>
+            <box size="0.05 0.05 0.05"/>
+          </geometry>
+        </visual>
+
+
+        </link>
+    
+
+    </xacro:macro>
+
+    <xacro:macro name="steering_joint" params="name child origin_xyz">
+    <joint name="${name}" type="continuous">
+            <origin rpy="0 0 0" xyz="${origin_xyz}"/>
+        <child link="${child}"/>
+        <parent link="origin"/>
+        <axis rpy="0 0 0" xyz="0 0 1"/>
+
+        <joint_properties damping="1.0" friction="1.0"/>
+      </joint>
+
+      <transmission name="${name}_steering_trans" type="SimpleTransmission">
+			<type>transmission_interface/SimpleTransmission</type>
+			<actuator name="${name}_steering_motor">
+				<mechanicalReduction>1</mechanicalReduction>
+			</actuator>
+			<joint name="${name}">
+				<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+			</joint>
+		</transmission>
+    </xacro:macro>
+
+
+
+</robot>
