@@ -94,24 +94,27 @@ void setup() {
   //nh.advertise(chatter);
   nh.subscribe(sub);
 
-
+//Motor 1
   encoderAPins[1] = 18;
   encoderBPins[1] = 23;
   pwmPins[1] = 8;
-  //  dirPins[1] = ;
+ // dirPins[1] = ;
 
+//Motor 2
     encoderAPins[3] = 19;
     encoderBPins[3] = 22;
     pwmPins[3] = 10;
    /// dirPins[0] = 24;
 
+// Motor 3
       encoderAPins[2] = 2;
-    encoderBPins[2] = 27;
+    encoderBPins[2] = 25;
     pwmPins[2] = 7;
 //    dirPins[2] = 25;
 
+//Motor 4
     encoderAPins[0] = 3;
-    encoderBPins[0] = 26 ;
+    encoderBPins[0] = 24 ;
     pwmPins[0] = 9;
   //  dirPins[3] = ;
 
@@ -176,7 +179,7 @@ void loop() {
 //    motorSpeed[i] = 90 * (sin(micros() / 1e6) > 0); //NOTE FOR TESTING TO SET THE SAME SPEED
 
     v2 = velocity2[i] / 420.0 * 60.0;
-    motorVelocity[i] = 0.854 * motorVelocity[i] + 0.0728 * v2 + 0.0728 * v2Prev[i];
+    motorVelocity[i] = -1*(0.854 * motorVelocity[i] + 0.0728 * v2 + 0.0728 * v2Prev[i]);
     v2Prev[i] = v2;
   }
 
@@ -189,11 +192,11 @@ void loop() {
     motorSpeed[1] = vel1*(60/(2*PI)); //NOTE FOR TESTING TO SET THE SAME SPEED
    motorSpeed[2] = vel2*(60/(2*PI)); //NOTE FOR TESTING TO SET THE SAME SPEED
     motorSpeed[3] = vel2*(60/(2*PI)); //NOTE FOR TESTING TO SET THE SAME SPEED
-  Serial.print("motorSpeed[0]: ");
- Serial.println(motorSpeed[0]);
-
-   Serial.print("motorCMD[0]: ");
- Serial.println(motorCMD[0]);
+//  Serial.print("motorSpeed[0]: ");
+// Serial.println(motorSpeed[0]);
+//
+//   Serial.print("motorCMD[0]: ");
+// Serial.println(motorCMD[0]);
 
   myPID1.Compute();
   myPID2.Compute();
@@ -206,9 +209,9 @@ void loop() {
     digitalWrite(dirPins[i], HIGH);
     analogWrite(pwmPins[i], motorCMD[i]);
   }
-//  Serial.print(motorSpeed[1]);
-//  Serial.print(" ");
-//  Serial.print(motorVelocity[1]);
+  Serial.print(motorSpeed[1]);
+  Serial.print(" ");
+  Serial.print(motorVelocity[1]);
 //  Serial.print(" ");
 //  Serial.print(motorSpeed[0]);
 //  Serial.print(" ");
@@ -217,7 +220,7 @@ void loop() {
 //  Serial.print(motorVelocity[3]);
 //  Serial.print(" ");
 //  Serial.print(motorVelocity[0]);
-//  Serial.println();
+  Serial.println();
 
   nh.spinOnce();
 }
