@@ -1,22 +1,65 @@
 <?xml version="1.0"?>
 <launch>
 
-  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find percy_sim)/worlds/farm_harder_line.world"/> <!-- Note: the world_name is with respect to GAZEBO_RESOURCE_PATH environmental variable -->
+
+  <!-- <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find percy_sim)/worlds/farm.world"/> 
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
-    <arg name="headless" value="false"/> <!-- Inert - see gazebo_ros_pkgs issue #491 -->
+    <arg name="headless" value="false"/> 
     <arg name="recording" value="false"/>
     <arg name="debug" value="false"/>
-  </include>
+  </include> -->
 
-  <param name="percy_model_description" command="$(find xacro)/xacro --inorder '$(find percy_model)/urdf/percy_model_v2.xacro'" />
+  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
+
+  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find percy_v4)/urdf/percy_model_v2.xacro'" />
+  <!-- <node name="listener" pkg="roscpp_tutorials" type="listener" output="screen"/>
+  <node name="talker" pkg="roscpp_tutorials" type="talker" output="screen"/> -->
+
+   <!-- <node name="percy_controller_manager" pkg="controller_manager" type="spawner"
+        respawn="false" output="screen" args="percy_controller"/> -->
+ 
+
+  <!-- HARDWARE INTERFACE FOR DIFF DRIVE -->
+ <node name="percy_node" type="percy_node" pkg="percy_base" output="screen" /> 
+  
+  <!-- CONFIG FILE FOR DIFF DRIVE  -->
+
+   <rosparam file="$(find percy_v4)/config/diff_control.yaml" command="load"/>
+
+    
+
+    <!-- LOAD DIFF DRIVE CONTROLLER -->
+    
+            <node name="percy_controller_manager" pkg="controller_manager" type="spawner"
+        respawn="false"  output="screen"  args=" percy_joint_publisher percy_velocity_controller "/> 
+
+<!-- HARDWARE INTERFACE FOR FOUR WHEEL STEERING     NOTE: DO NOT LOAD IF RUNNING GAZEBO-->
+ <!-- <node name="percy_4ws_node" type="percy_4ws_node" pkg="percy_4ws_hi" output="screen" />  -->
 
 
-  <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
-  <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
-    args="-urdf -model percy -param percy_model_description -z 1"/> 
+<!-- CONFIG FILE FOR 4WS  -->
+
+   <rosparam file="$(find percy_v4)/config/4ws_config.yaml" command="load"/>
+
+
+<!-- LOAD 4WS CONTROLLER -->
+  <!-- <node name="percy_controller_manager" pkg="controller_manager" type="spawner"
+        respawn="false"  output="screen"  args=" robot_joint_publisher four_wheel_steering_controller "/>  -->
+
+        
+
+  <!-- REMAP FROM /cmd_vel to topic needed for controller  -->
+<!-- <remap from="/cmd_vel" to="/four_wheel_steering_controller/cmd_vel" />
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" /> -->
+  
+
+
+    <!-- Run a python script to the send a service call to gazebo_ros to spawn a URDF robot -->
+<!-- <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
+    args="-urdf -model percy -param robot_description -x 0 -z 1"/> 
+     -->
 
 </launch>
