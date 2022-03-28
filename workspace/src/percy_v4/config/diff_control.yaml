@@ -1,8 +1,8 @@
-test_joint_publisher:
+percy_joint_publisher:
   type: "joint_state_controller/JointStateController"
   publish_rate: 50
   
-test_velocity_controller:
+percy_velocity_controller:
   type        : "diff_drive_controller/DiffDriveController"
   left_wheel  : ['joint_front_left_wheel','joint_rear_left_wheel']
   right_wheel : ['joint_front_right_wheel','joint_rear_right_wheel']
